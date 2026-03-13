@@ -21,6 +21,8 @@
 | 09-03-2026 | When HPA recommendations are generated in future, it will be maintained in separate config outside containers as they are specific to deployment | Bharath Appali |
 | 09-03-2026 | Flip the structure to start from terms down to containers and recommendation and compare the size | Dinakar Guniguntala |
 | 10-03-2026 | Include tasks related to ROS and discuss with ROS team ASAP | Dinakar Guniguntala |
+| 13-03-2026 | change key kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].current.replicas to pod_count | Sagnik Dutta |
+| 13-03-2026 | key 'replicas' is of different datatype. in different context. It might cause confusion | Kavita Gaikwad |
 
 ## Approval Log
 

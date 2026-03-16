@@ -1,6 +1,6 @@
 # [Kruize | ROS] Include current replica count in recommendation API response
 
-**Version:** 0.3<br>
+**Version:** 0.4<br>
 **Date:** 09th March 2026<br>
 **Status:** Under Review
 
@@ -11,6 +11,7 @@
 | 0.1 | 09-03-2026 | Initial Outline | Bhaktavatsal Reddy |
 | 0.2 | 10-03-2026 | Include feedback from design review meeting @ 09th March 2026 | Bhaktavatsal Reddy |
 | 0.3 | 11-03-2026 | Added tasks for ROS and Cost Management | Bhaktavatsal Reddy |
+| 0.4 | 16-03-2026 | Addressed feedback from ROS team | Bhaktavatsal Reddy |
 
 ## Review Log
 
@@ -23,6 +24,7 @@
 | 10-03-2026 | Include tasks related to ROS and discuss with ROS team ASAP | Dinakar Guniguntala |
 | 13-03-2026 | change key kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].current.replicas to pod_count | Sagnik Dutta |
 | 13-03-2026 | key 'replicas' is of different datatype. in different context. It might cause confusion | Kavita Gaikwad |
+| 13-03-2026 | include replicas of last datapoint in kubernetes_objects[n].containers[n].recommendations.data.[ts].current | Sagnik Dutta |
 
 ## Approval Log
 
@@ -1277,7 +1279,7 @@ Following decisions are made
 - Recommended pod count (whenever we have it) should be made available in kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].config.
 - Restructure kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].config to maintain same structure as deployment yaml.
 
-## API Response
+## API Response (v0.3)
 
 Based on the decisions made in this ADR, please find the json response as shown below.
 
@@ -1373,6 +1375,113 @@ Based on the decisions made in this ADR, please find the json response as shown 
 ]
 ```
 
+## API Response (v0.4)
+
+After addressing feedback from Kruize and ROS team, following is the json response.
+
+```jsonc
+[
+  {
+    "cluster_name": "default",
+    "experiment_name": "monitor_tfb_benchmark",
+    "experiment_type": "container",
+    "kubernetes_objects":
+    [
+      {
+        "containers":
+        [
+          {
+            "container_image_name": "kruize/tfb-qrh:1.13.2.F_et17",
+            "container_name": "tfb-server",
+            "recommendations":
+            {
+              "data":
+              {
+                "2025-11-17T10:31:51.000Z":
+                {
+                  "current":
+                  {
+                    "replicas": 3, // new attribute : replicas; current value.
+                    "resources": 
+                    {
+                      "limits": {}, // nested under resources
+                      "requests": {} // nested under resources
+                    }
+                  },
+                  "monitoring_end_time": "2025-11-17T10:31:51.000Z",
+                  "recommendation_terms":
+                  {
+                    "short_term":
+                    {
+                      // New attribute : current; max and min replica of recommendation term
+                      "metrics_info":
+                      {
+                        "pod_count":
+                        {
+                          "avg": 2,
+                          "max": 3,
+                          "min": 1
+                        }
+                      },
+                      "duration_in_hours": 24.0,
+                      "monitoring_start_time": "2025-11-16T10:31:51.000Z",
+                      "recommendation_engines":
+                      {
+                        "cost":
+                        {
+                          // Removed attribute : pods_count
+                          "config":
+                          {
+                            "replicas": 4, // new attribute : replicas; recommended static value.
+                            "resources": 
+                            {
+                              "limits": {}, // nested under resources
+                              "requests": {} // nested under resources
+                            },
+                            "env":
+                            [
+                              {
+                                "name": "JDK_JAVA_OPTIONS",
+                                "value": "-server -XX:+UseZGC -XX:MaxRAMPercentage=80 "
+                              }
+                            ]
+                          },
+                          "variation":
+                          {
+                            // new attribute : replicas; variation w.r.t max replicas for each recommendation term.
+                            "replicas": 1,
+                            "resources": // New section
+                            {
+                              "limits": {},
+                              "requests": {}
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "name": "tfb-qrh-sample-0",
+        "namespace": "default",
+        "type": "deployment"
+      }
+    ],
+    "version": "v2.0"
+  }
+]
+```
+
+This include following changes since last version
+
+- kubernetes_objects[n].containers[n].recommendations.data.[ts].current is modified to keep it inline with the deployment yaml.
+- Included 'replicas' in current configuration kubernetes_objects[n].containers[n].recommendations.data.[ts].current
+- renamed kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].current to kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].metrics_info
+- renamed kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].current.replicas to kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].metrics_info.pod_count
+
 ## External Dependency
 
 Our solution revolves around the metrics we currently collect. From these, we could compute the pods count using formulae mentioned above. However, it is advisable to get the metrics from Cost Operator. Till the time we get the metrics data available from cost operator, we will use computed value for pod count as a stop gap solution.
@@ -1392,24 +1501,26 @@ min_over_time(sum(kube_pod_container_status_ready{namespace="$NAMESPACE$", conta
 
 | Task Description | Dev Efforts | Owner |
 | --- | --- | --- |
-| Update performance profile to include queries for new metric 'replicas' | 0.5 pd | Saad |
-| Open ticket with ROS/CostManagement to include queries for metric 'replicas' | 0.5 pd | Bhaktavatsal |
-| Support new metric 'replicas' in updateResults endpoint | 1 pd | Saad |
+| Update performance profile to include queries for new metric 'podCount' | 0.5 pd | Saad |
+| Open ticket with ROS/CostManagement to include queries for metric 'podCount' | 0.5 pd | Bhaktavatsal |
+| Support new metric 'podCount' in updateResults endpoint | 1 pd | Saad |
 | Update logic of computing replicas in the order replicas -> cpuUsage -> memory -> 0 | 0.5 pd | Saad |
 | Restructure recommendation json and include aggregated values of replicas | 1 pd | Saad |
 | Open ticket with ROS team to handle the change in recommendation json | 0.5 pd | Bhaktavatsal |
-| Open ticket with ROS team to capture and include new metric 'replicas' in updateResults API | 0.5 pd | Bhaktavatsal |
+| Open ticket with ROS team to capture and include new metric 'podCount' in updateResults API | 0.5 pd | Bhaktavatsal |
 
 ### Cost Management team
 
 | Task Description | Dev Efforts |
 | --- | --- |
-| Include queries and start collecting and persist data for new metric 'replicas' | |
+| Include queries and start collecting and persist data for new metric 'podCount' | |
 
 ### ROS team
 
 | Task Description | Dev Efforts |
 | --- | --- |
-| Handle changes in recommendation json with fallback logic for backward compatibility | |
-| Handle new metric 'replicas' from cost management and send to Kruize via updateResults API | |
+| Handle structural changes in kubernetes_objects[n].containers[n].recommendations.data.[ts].current json with fallback logic for backward compatibility | |
+| Handle new section kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].metrics_info | |
+| Handle structural changes in kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].config with fallback logic for backward compatibility | |
+| Handle new metric 'podCount' from cost management and send to Kruize via updateResults API | |
 | UI changes to show actual pod count, min & max for recommendation term | |

@@ -1,6 +1,6 @@
 # [Kruize | ROS] Include current replica count in recommendation API response
 
-**Version:** 0.4<br>
+**Version:** 0.5<br>
 **Date:** 09th March 2026<br>
 **Status:** Under Review
 
@@ -12,6 +12,7 @@
 | 0.2 | 10-03-2026 | Include feedback from design review meeting @ 09th March 2026 | Bhaktavatsal Reddy |
 | 0.3 | 11-03-2026 | Added tasks for ROS and Cost Management | Bhaktavatsal Reddy |
 | 0.4 | 16-03-2026 | Addressed feedback from ROS team | Bhaktavatsal Reddy |
+| 0.5 | 17-03-2026 | Updated task to make changes to Kruize tests | Bhaktavatsal Reddy |
 
 ## Review Log
 
@@ -25,6 +26,7 @@
 | 13-03-2026 | change key kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].current.replicas to pod_count | Sagnik Dutta |
 | 13-03-2026 | key 'replicas' is of different datatype. in different context. It might cause confusion | Kavita Gaikwad |
 | 13-03-2026 | include replicas of last datapoint in kubernetes_objects[n].containers[n].recommendations.data.[ts].current | Sagnik Dutta |
+| 17-03-2026 | Update kruize test as changes include breaking changes | Chandrakala |
 
 ## Approval Log
 
@@ -1508,6 +1510,7 @@ min_over_time(sum(kube_pod_container_status_ready{namespace="$NAMESPACE$", conta
 | Restructure recommendation json and include aggregated values of replicas | 1 pd | Saad |
 | Open ticket with ROS team to handle the change in recommendation json | 0.5 pd | Bhaktavatsal |
 | Open ticket with ROS team to capture and include new metric 'podCount' in updateResults API | 0.5 pd | Bhaktavatsal |
+| Changes to Kruize tests to accommodate changes in recommendation json response | 1 pd | Saad |
 
 ### Cost Management team
 

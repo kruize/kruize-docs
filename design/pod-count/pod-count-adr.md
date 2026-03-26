@@ -17,19 +17,20 @@
 
 ## Review Log
 
-| Date | Feedback | Reviewer |
-| --- | --- | --- |
-| 09-03-2026 | Include 'avg' in kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].current.replicas | Kusuma Chalasani |
-| 09-03-2026 | Modify kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].config.replicas to hold number instead of JSONObject | Dinakar Guniguntala |
-| 09-03-2026 | When HPA recommendations are generated in future, it will be maintained in separate config outside containers as they are specific to deployment | Bharath Appali |
-| 09-03-2026 | Flip the structure to start from terms down to containers and recommendation and compare the size | Dinakar Guniguntala |
-| 10-03-2026 | Include tasks related to ROS and discuss with ROS team ASAP | Dinakar Guniguntala |
-| 13-03-2026 | change key kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].current.replicas to pod_count | Sagnik Dutta |
-| 13-03-2026 | key 'replicas' is of different datatype. in different context. It might cause confusion | Kavita Gaikwad |
-| 13-03-2026 | include replicas of last datapoint in kubernetes_objects[n].containers[n].recommendations.data.[ts].current | Sagnik Dutta |
-| 17-03-2026 | Update kruize test as changes include breaking changes | Chandrakala |
-| 25-03-2026 | Release breaking changes part of new version of API instead of existing | Sagnik Dutta |
-| 25-03-2026 | kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].metrics_info can be renamed to something else | Sagnik Dutta |
+| Date | Feedback | Reviewer | Status |
+| --- | --- | --- | --- |
+| 09-03-2026 | Include 'avg' in kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].current.replicas | Kusuma Chalasani | Done |
+| 09-03-2026 | Modify kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].config.replicas to hold number instead of JSONObject | Dinakar Guniguntala | Done |
+| 09-03-2026 | When HPA recommendations are generated in future, it will be maintained in separate config outside containers as they are specific to deployment | Bharath Appali | Done |
+| 09-03-2026 | Restructure recommendation json to map it directly object using default deserializers without need to use custom JSON processors | Bhaktavatsal Reddy | Out of Scope |
+| 09-03-2026 | Flip the structure to start from terms down to containers and recommendation and compare the size | Dinakar Guniguntala | Out of Scope |
+| 10-03-2026 | Include tasks related to ROS and discuss with ROS team ASAP | Dinakar Guniguntala | Done |
+| 13-03-2026 | change key kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].current.replicas to pod_count | Sagnik Dutta | Done |
+| 13-03-2026 | key 'replicas' is of different datatype. in different context. It might cause confusion | Kavita Gaikwad | Done |
+| 13-03-2026 | include replicas of last datapoint in kubernetes_objects[n].containers[n].recommendations.data.[ts].current | Sagnik Dutta | Done |
+| 17-03-2026 | Update kruize test as changes include breaking changes | Chandrakala | Done |
+| 25-03-2026 | Release breaking changes part of new version of API instead of existing | Sagnik Dutta | Done |
+| 25-03-2026 | kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].metrics_info can be renamed to something else | Sagnik Dutta | Under Consideration |
 
 ## Approval Log
 
@@ -1535,4 +1536,4 @@ min_over_time(sum(kube_pod_container_status_ready{namespace="$NAMESPACE$", conta
 
 ## Conclusion
 
-Kruize will create new API endpoint for recommendations that gives response with schema as finalized in [API Response (v0.4)](URL "https://github.com/kruize/kruize-docs/blob/main/design/pod-count/pod-count-adr.md#api-response-v04")
+Kruize will create new API endpoint `/kruize/api/v1/recommendations` for recommendations that gives response with schema as finalized in [API Response (v0.4)](URL "https://github.com/kruize/kruize-docs/blob/main/design/pod-count/pod-count-adr.md#api-response-v04")

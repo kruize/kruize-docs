@@ -1,6 +1,6 @@
 # [Kruize | ROS] Include current replica count in recommendation API response
 
-**Version:** 0.5<br>
+**Version:** 0.6<br>
 **Date:** 09th March 2026<br>
 **Status:** Under Review
 
@@ -13,6 +13,7 @@
 | 0.3 | 11-03-2026 | Added tasks for ROS and Cost Management | Bhaktavatsal Reddy |
 | 0.4 | 16-03-2026 | Addressed feedback from ROS team | Bhaktavatsal Reddy |
 | 0.5 | 17-03-2026 | Updated task to make changes to Kruize tests | Bhaktavatsal Reddy |
+| 0.6 | 26-03-2026 | Update task to release breaking changes as part of new API | Bhaktavatsal Reddy |
 
 ## Review Log
 
@@ -27,6 +28,8 @@
 | 13-03-2026 | key 'replicas' is of different datatype. in different context. It might cause confusion | Kavita Gaikwad |
 | 13-03-2026 | include replicas of last datapoint in kubernetes_objects[n].containers[n].recommendations.data.[ts].current | Sagnik Dutta |
 | 17-03-2026 | Update kruize test as changes include breaking changes | Chandrakala |
+| 25-03-2026 | Release breaking changes part of new version of API instead of existing | Sagnik Dutta |
+| 25-03-2026 | kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].metrics_info can be renamed to something else | Sagnik Dutta |
 
 ## Approval Log
 
@@ -1506,11 +1509,12 @@ min_over_time(sum(kube_pod_container_status_ready{namespace="$NAMESPACE$", conta
 | Update performance profile to include queries for new metric 'podCount' | 0.5 pd | Saad |
 | Open ticket with ROS/CostManagement to include queries for metric 'podCount' | 0.5 pd | Bhaktavatsal |
 | Support new metric 'podCount' in updateResults endpoint | 1 pd | Saad |
-| Update logic of computing replicas in the order replicas -> cpuUsage -> memory -> 0 | 0.5 pd | Saad |
-| Restructure recommendation json and include aggregated values of replicas | 1 pd | Saad |
-| Open ticket with ROS team to handle the change in recommendation json | 0.5 pd | Bhaktavatsal |
+| Update logic of computing replicas in this order 'replicas -> cpuUsage -> memory -> 0' | 0.5 pd | Saad |
+| Create new model object to accommodate new json structure | 0.5 pd | Saad |
+| Create new API /kruize/api/v1/recommendations | 0.5 pd | Saad |
+| Open ticket with ROS team to consume new API endpoint | 0.5 pd | Bhaktavatsal |
 | Open ticket with ROS team to capture and include new metric 'podCount' in updateResults API | 0.5 pd | Bhaktavatsal |
-| Changes to Kruize tests to accommodate changes in recommendation json response | 1 pd | Saad |
+| Changes to Kruize tests to include tests for new API endpoint | 1 pd | Saad |
 
 ### Cost Management team
 
@@ -1522,8 +1526,13 @@ min_over_time(sum(kube_pod_container_status_ready{namespace="$NAMESPACE$", conta
 
 | Task Description | Dev Efforts |
 | --- | --- |
-| Handle structural changes in kubernetes_objects[n].containers[n].recommendations.data.[ts].current json with fallback logic for backward compatibility | |
+| Consume new API endpoint /kruize/api/v1/recommendations | |
+| Handle structural changes kubernetes_objects[n].containers[n].recommendations.data.[ts].current json of new API | |
 | Handle new section kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].metrics_info | |
 | Handle structural changes in kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].config with fallback logic for backward compatibility | |
 | Handle new metric 'podCount' from cost management and send to Kruize via updateResults API | |
 | UI changes to show actual pod count, min & max for recommendation term | |
+
+## Conclusion
+
+Kruize will create new API endpoint for recommendations that gives response with schema as finalized in [API Response (v0.4)](URL "https://github.com/kruize/kruize-docs/blob/main/design/pod-count/pod-count-adr.md#api-response-v04")

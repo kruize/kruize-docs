@@ -39,6 +39,7 @@
 | Technical Lead | Kusuma Chalasani | | |
 | Chief Architect | Dinakar Guniguntala | | |
 | Project Manager | Rashmi Badagandi | | |
+| Product Manager | Pau Garcia Quiles | | |
 | ROS Backend | Kavita Gaikwad | | |
 
 ## Problem Statement

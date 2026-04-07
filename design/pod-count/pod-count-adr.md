@@ -2,7 +2,7 @@
 
 **Version:** 0.6<br>
 **Date:** 09th March 2026<br>
-**Status:** Under Review
+**Status:** Approved
 
 ## Document Log
 
@@ -36,11 +36,11 @@
 
 | Role | Name | Date | Comments |
 | --- | --- | --- | --- |
-| Technical Lead | Kusuma Chalasani | | |
-| Chief Architect | Dinakar Guniguntala | | |
-| Project Manager | Rashmi Badagandi | | |
-| Product Manager | Pau Garcia Quiles | | |
-| ROS Backend | Kavita Gaikwad | | |
+| Technical Lead | Kusuma Chalasani | 14-03-2026 | |
+| Chief Architect | Dinakar Guniguntala | 14-03-2026 | |
+| Project Manager | Rashmi Badagandi | 14-03-2026 | |
+| Product Manager | Pau Garcia Quiles | 26-03-2026 | |
+| ROS Backend | Kavita Gaikwad | 26-03-2026 | |
 
 ## Problem Statement
 
@@ -1537,4 +1537,4 @@ min_over_time(sum(kube_pod_container_status_ready{namespace="$NAMESPACE$", conta
 
 ## Conclusion
 
-Kruize will create new API endpoint `/kruize/api/v1/recommendations` for recommendations that gives response with schema as finalized in [API Response (v0.4)](URL "https://github.com/kruize/kruize-docs/blob/main/design/pod-count/pod-count-adr.md#api-response-v04")
+Kruize will create new API endpoint `/kruize/api/v1/recommendations` for recommendations that gives response with schema as finalized in [API Response (v0.4)](https://github.com/kruize/kruize-docs/blob/main/design/pod-count/pod-count-adr.md#api-response-v04)

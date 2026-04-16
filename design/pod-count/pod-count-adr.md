@@ -31,6 +31,8 @@
 | 17-03-2026 | Update kruize test as changes include breaking changes | Chandrakala | Done |
 | 25-03-2026 | Release breaking changes part of new version of API instead of existing | Sagnik Dutta | Done |
 | 25-03-2026 | kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].metrics_info can be renamed to something else | Sagnik Dutta | Parked for lack of suggestions |
+| 16-04-2026 | Add notification to indicate that podCount is a calculated value | Sagnik Dutta | Under Review |
+| 16-04-2026 | Multiple version attributes in recommendation response with different version numbers | Sagnik Dutta | Under Review |
 
 ## Approval Log
 

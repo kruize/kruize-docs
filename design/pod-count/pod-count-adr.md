@@ -42,7 +42,7 @@
 | Chief Architect | Dinakar Guniguntala | 14-03-2026 | |
 | Project Manager | Rashmi Badagandi | 14-03-2026 | |
 | Product Manager | Pau Garcia Quiles | 26-03-2026 | |
-| ROS Backend | Kavita Gaikwad | 26-03-2026 | |
+| ROS Backend | Kavita Gaikwad | 22-04-2026 | |
 
 ## Problem Statement
 
@@ -1288,103 +1288,7 @@ Following decisions are made
 - Recommended pod count (whenever we have it) should be made available in kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].config.
 - Restructure kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].config to maintain same structure as deployment yaml.
 
-## API Response (v0.3)
-
-Based on the decisions made in this ADR, please find the json response as shown below.
-
-```jsonc
-[
-  {
-    "cluster_name": "default",
-    "experiment_name": "monitor_tfb_benchmark",
-    "experiment_type": "container",
-    "kubernetes_objects":
-    [
-      {
-        "containers":
-        [
-          {
-            "container_image_name": "kruize/tfb-qrh:1.13.2.F_et17",
-            "container_name": "tfb-server",
-            "recommendations":
-            {
-              "data":
-              {
-                "2025-11-17T10:31:51.000Z":
-                {
-                  "current":
-                  {
-                    "limits": {},
-                    "requests": {}
-                  },
-                  "monitoring_end_time": "2025-11-17T10:31:51.000Z",
-                  "recommendation_terms":
-                  {
-                    "short_term":
-                    {
-                      // New attribute : current; max and min replica of recommendation term
-                      "current":
-                      {
-                        "replicas":
-                        {
-                          "avg": 2,
-                          "max": 3,
-                          "min": 1
-                        }
-                      },
-                      "duration_in_hours": 24.0,
-                      "monitoring_start_time": "2025-11-16T10:31:51.000Z",
-                      "recommendation_engines":
-                      {
-                        "cost":
-                        {
-                          // Removed attribute : pods_count
-                          "config":
-                          {
-                            "replicas": 4, // new attribute : replicas; recommended static value.
-                            "resources": // New section
-                            {
-                              "limits": {},
-                              "requests": {}
-                            },
-                            "env":
-                            [
-                              {
-                                "name": "JDK_JAVA_OPTIONS",
-                                "value": "-server -XX:+UseZGC -XX:MaxRAMPercentage=80 "
-                              }
-                            ]
-                          },
-                          "variation":
-                          {
-                            // new attribute : replicas; variation w.r.t max replicas for each recommendation term.
-                            "replicas": 1,
-                            "resources": // New section
-                            {
-                              "limits": {},
-                              "requests": {}
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "name": "tfb-qrh-sample-0",
-        "namespace": "default",
-        "type": "deployment"
-      }
-    ],
-    "version": "v2.0"
-  }
-]
-```
-
-## API Response (v0.4)
+## API Response
 
 After addressing feedback from Kruize and ROS team, following is the json response.
 
@@ -1441,7 +1345,7 @@ After addressing feedback from Kruize and ROS team, following is the json respon
                           // Removed attribute : pods_count
                           "config":
                           {
-                            "replicas": 4, // new attribute : replicas; recommended static value.
+                            "replicas": 4, // new attribute : replicas; recommended static value. Not in scope of this ADR
                             "resources": 
                             {
                               "limits": {}, // nested under resources
@@ -1457,8 +1361,8 @@ After addressing feedback from Kruize and ROS team, following is the json respon
                           },
                           "variation":
                           {
-                            // new attribute : replicas; variation w.r.t max replicas for each recommendation term.
-                            "replicas": 1,
+                            
+                            "replicas": 1, // new attribute : replicas; variation w.r.t max replicas for each recommendation term. Not in scope of this ADR
                             "resources": // New section
                             {
                               "limits": {},
@@ -1539,4 +1443,13 @@ min_over_time(sum(kube_pod_container_status_ready{namespace="$NAMESPACE$", conta
 
 ## Conclusion
 
-Kruize will create new API endpoint `/kruize/api/v1/recommendations` for recommendations that gives response with schema as finalized in [API Response (v0.4)](https://github.com/kruize/kruize-docs/blob/main/design/pod-count/pod-count-adr.md#api-response-v04)
+1. Kruize will include following attributes to existing API endpoint /updateRecommendations response
+    - kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].current.replicas
+    - kubernetes_objects[n].containers[n].recommendations.data.[ts].recommendation_terms.[term].metrics_info
+    - additional notification entry at kubernetes_objects[n].containers[n].recommendations.notifications if current podCount info is calculated from cpuUsage or memoryUsage.
+    - version will be 3.0
+    - kubernetes_objects[n].containers[n].recommendations.version will be either removed or set to 3.0 to keep it consistent.
+
+2. Kruize will expose new API endpoint /kruize/api/v1/recommendations that includes above changes to response + breaking changes to move requests & limits nested under resources attribute whereever they exist in the response.
+    - version will be 1.0 as it is new endpoint.
+    - kubernetes_objects[n].containers[n].recommendations.version will be either removed or set to 1.0 to keep it consistent.
